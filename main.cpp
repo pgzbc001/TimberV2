@@ -123,7 +123,8 @@ int main()
 
     timeBar.setSize(Vector2f(timeBarStartWidth, timeBarHeight));
     timeBar.setFillColor(Color::Red);
-    timeBar.setPosition({(1440 / 2.0f) - timeBarStartWidth / 2, 900 - 100 * scaleFactor});
+    // 修改时间条位置 - 放在屏幕底部中间，更靠下一些避免被遮挡
+    timeBar.setPosition({(1440 / 2.0f) - timeBarStartWidth / 2, 900 - 150 * scaleFactor});
 
     float timeRemaining = 6.0f;
     float timeBarWidthPerSecond = timeBarStartWidth / timeRemaining;
@@ -445,19 +446,19 @@ int main()
                 lastDrawn = 0;
             }
 
-            // 更新树枝精灵位置
+            // 更新树枝精灵位置 - 保持原始代码不变
             for (int i = 0; i < NUM_BRANCHES; i++)
             {
                 float height = i * 150 * scaleFactor;
                 if (branchPositions[i] == side::LEFT)
                 {
-                    branches[i]->setPosition({610 * scaleFactor, height});
+                    branches[i]->setPosition({650 * scaleFactor, height});
                     branches[i]->setOrigin({220 * scaleFactor, 40 * scaleFactor});
                     branches[i]->setRotation(sf::degrees(180));
                 }
                 else if (branchPositions[i] == side::RIGHT)
                 {
-                    branches[i]->setPosition({1330 * scaleFactor, height});
+                    branches[i]->setPosition({1270 * scaleFactor, height});
                     branches[i]->setOrigin({220 * scaleFactor, 40 * scaleFactor});
                     branches[i]->setRotation(sf::degrees(0));
                 }
@@ -506,26 +507,38 @@ int main()
             }
         }
 
-        // 绘制
+        // ========== 绘制部分 - 只修改了时间条的绘制位置 ==========
         window.clear();
+
+        // 1. 先绘制背景
         window.draw(spriteBackground);
 
+        // 2. 绘制时间条 - 提前绘制，确保不被树木遮挡
+        window.draw(timeBar);
+
+        // 3. 绘制云朵
         for (int i = 0; i < NUM_CLOUDS; i++)
         {
             window.draw(*clouds[i]);
         }
 
-        window.draw(spriteTree2);
-        window.draw(spriteTree3);
-        window.draw(spriteTree4);
-        window.draw(spriteTree5);
-        window.draw(spriteTree6);
+        // 4. 绘制背景树木
+        // 儿子不喜欢，这段代码不要了
+        // window.draw(spriteTree2);
+        // window.draw(spriteTree3);
+        // window.draw(spriteTree4);
+        // window.draw(spriteTree5);
+        // window.draw(spriteTree6);
 
+        // 5. 绘制树枝（保持原始位置）
         for (int i = 0; i < NUM_BRANCHES; i++) {
             window.draw(*branches[i]);
         }
 
+        // 6. 绘制主要树木
         window.draw(spriteTree);
+
+        // 7. 绘制游戏元素
         window.draw(spritePlayer);
         window.draw(spriteAxe);
         window.draw(spriteLog);
@@ -535,8 +548,8 @@ int main()
         window.draw(spriteBee);
         window.draw(scoreText);
         window.draw(fpsText);
-        window.draw(timeBar);
 
+        // 8. 绘制消息（最上层）
         if (paused && !messageText.getString().isEmpty())
         {
             window.draw(messageText);
